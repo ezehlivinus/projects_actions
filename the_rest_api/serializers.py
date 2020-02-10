@@ -7,6 +7,14 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project
         fields = ['id', 'name', 'description', 'completed', 'created_at', 'updated_at']
 
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.description = validated_data.get('description', instance.description)
+        instance.completed = validated_data.get('completed', instance.completed)
+        instance.save()
+        return instance
+
+
 class ActionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Action
