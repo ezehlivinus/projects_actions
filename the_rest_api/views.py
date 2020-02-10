@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from the_rest_api.models import Project, Action
 from the_rest_api.serializers import UserSerializer, ProjectSerializer, ActionSerializer
 
-class ProjectViewSet(viewsets.viewSet):
+class ProjectViewSet(viewsets.ViewSet):
     '''
     Project ViewSet:
     API endpoint that allows project to be viewed or edited
@@ -26,6 +26,18 @@ class ProjectViewSet(viewsets.viewSet):
             return Response(status=HTTP_400_BAD_REQUEST)
         serializer.save()
         return Response(data=serializer.data, status=HTTP_201_CREATED)
+
+
+    # GET: api/projects/<projectid>
+    def retrieve(self, request, pk):
+        try:
+            project = Project.objects.get(pk=pk)
+        except Project.DoesNotExist:
+            return Response(status=HTTP_404_NOT_FOUND)
+
+        serializer = ProjectSerializer(project)
+        return Response(data=serializer.data, status=HTTP_200_OK)
+
 
     # GET: api/projects
     def list(self, request):
@@ -42,7 +54,7 @@ class ProjectViewSet(viewsets.viewSet):
         project_detail.save()
         return Response(status=HTTP_204_NO_CONTENT)
 
-    # PATCH/PUT: api/projects/<projectid>
+    # PATCH: api/projects/<projectid>
     def partial_update(self, request, pk):
         project = Project.objects.filter(pk=pk).first()
         if not project:
@@ -50,16 +62,26 @@ class ProjectViewSet(viewsets.viewSet):
         serializer = self.serializer_class(project, data=request.data, partial=True)
 
         if serializer.is_valid():
+            # fields to be updated: instance.field = new_value
             serializer.save()
             return Response(data=serializer.data, status=HTTP_200_OK)
 
+    # PUT: api/projects/<projectid>
+    def update(self, request, pk):
+        project = Project.objects.filter(pk=pk).first()
+        if not project:
+            return Response(status=HTTP_404_NOT_FOUND)
+        serializer = self.serializer_class(project, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+        return Response(data=serializer.data, status=HTTP_200_OK)
 
-
-class ActionViewSet(viewsets.viewSet):
+class ActionViewSet(viewsets.ViewSet):
     '''
     Action ViewSet:
     API endpoint that allows project to be viewed or edited
     '''
+    pass
 
 class UserViewSet(viewsets.ModelViewSet):
     queryet = User.objects.all().order_by('-date_joined')

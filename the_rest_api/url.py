@@ -6,8 +6,8 @@ from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter(trailing_slash=False)
 
-router.register(r'project', ProjectViewSet, basename='project')
-router.register(r'action', ActionViewSet, basename='action')
+router.register(r'projects', ProjectViewSet, basename='projects')
+# router.register(r'actions', ActionViewSet, basename='actions')
 
 urlpatterns = [
     url(r'', include(router.urls)),
