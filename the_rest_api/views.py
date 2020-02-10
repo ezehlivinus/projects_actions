@@ -51,7 +51,7 @@ class ProjectViewSet(viewsets.ViewSet):
             project_detail = Project.objects.get(pk=pk)
         except Project.DoesNotExist:
             return Response(status=HTTP_404_NOT_FOUND)
-        project_detail.save()
+        project_detail.delete()
         return Response(status=HTTP_204_NO_CONTENT)
 
     # PATCH: api/projects/<projectid>
@@ -60,7 +60,7 @@ class ProjectViewSet(viewsets.ViewSet):
         if not project:
             return Response(status=HTTP_404_NOT_FOUND)
         serializer = self.serializer_class(project, data=request.data, partial=True)
-
+        
         if serializer.is_valid():
             # fields to be updated: instance.field = new_value
             serializer.save()
