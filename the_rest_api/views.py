@@ -11,12 +11,22 @@ from rest_framework.status import (
 from rest_framework.response import Response
 from the_rest_api.models import Project, Action
 from the_rest_api.serializers import UserSerializer, ProjectSerializer, ActionSerializer
+from rest_framework.decorators import api_view, action
+
+
 
 class ProjectViewSet(viewsets.ViewSet):
     '''
     Project ViewSet:
     API endpoint that allows project to be viewed or edited
     '''
+
+    def get_object(self, pk):
+        try:
+            return Project.objects.get(pk=pk)
+        except:
+            raise
+
     serializer_class = ProjectSerializer
 
     # POST: api/projects
@@ -76,12 +86,73 @@ class ProjectViewSet(viewsets.ViewSet):
             serializer.save()
         return Response(data=serializer.data, status=HTTP_200_OK)
 
+
+    @action(methods=['post', 'get'], detail=True, url_path='actions')
+    def actions(self, request, pk):
+        # create action(s) under this project
+        if request.method == 'POST':
+            project = self.get_object(pk)
+            return ActionViewSet.create(ActionViewSet, request.data, pk)
+        
+        if request.method == 'GET':
+            project = self.get_object(pk)
+            try:
+                actions = Action.objects.filter(project_id=project.id).order_by('-created_at')
+                serializer = ActionSerializer(actions, many=True)
+                return Response(data=serializer.data, status=HTTP_200_OK)
+            except:
+                raise
+
+    # def project_actions(self, request, pk):
+
+        
+        
 class ActionViewSet(viewsets.ViewSet):
     '''
     Action ViewSet:
-    API endpoint that allows project to be viewed or edited
+    API endpoint that allows action to be viewed or edited
     '''
-    pass
+
+    def get_object(self, pk):
+        try:
+            return Action.objects.get(pk=pk)
+        except:
+            raise
+
+    serializer_class = ActionSerializer
+    
+    def create(self, request, pk):
+
+        data = {
+            **request, 'project': pk,
+        }
+
+        serializer = self.serializer_class(data=data)
+
+        if not serializer.is_valid():
+
+            return Response(data={'error': 'Something went wrong: the data sent might not be valid'}, status=HTTP_400_BAD_REQUEST)
+        serializer.save()
+
+        return Response(data=serializer.data, status=HTTP_201_CREATED)
+    
+
+    # GET: api/projects
+    def list(self, request):
+        '''List all actions'''
+        queryset = Action.objects.all().order_by('created_at')
+        serializer = ActionSerializer(queryset, many=True)
+        return Response(data=serializer.data, status=HTTP_200_OK)
+
+    
+        # GET: api/projects/<projectid>/
+    def retrieve(self, request, pk):
+
+        # serializer = ActionSerializer(actions)
+        # return Response(data=serializer.data, status=HTTP_200_OK)
+
+    def project_actions(self, request, pk)
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryet = User.objects.all().order_by('-date_joined')

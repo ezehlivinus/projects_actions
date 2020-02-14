@@ -20,6 +20,19 @@ class ActionSerializer(serializers.ModelSerializer):
         model = Action
         fields = ['id', 'project', 'description', 'note', 'created_at', 'updated_at']
 
+    def create(self, validated_data):
+        action = Action.objects.create(**validated_data)
+        return action
+
+
+    def update(self, instance, validated_data):
+
+        instance.project = validated_data.get('project', instance.project)
+        instance.description = validated_data.get('description', instance.description)
+        instance.note = validated_data.get('note', instance.note)
+        instance.save()
+        return instance
+        
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
