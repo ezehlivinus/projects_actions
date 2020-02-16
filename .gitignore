@@ -5,3 +5,4 @@ staticfiles
 db.sqlite3
 __pycache__/
 the_rest_api/__pycache__/
+the_rest_api\__pycache__
