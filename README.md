@@ -5,7 +5,7 @@ This project is based on the <a href="https://drive.google.com/file/d/1cktwfL57m
 <p><a href="https://projects-actions-api.herokuapp.com/api/projects">Check here for quick start</a></p>
 
 # Endpoints implemented so far:
-<p>api/projects</p>
+<p>api/projects, api/projects/projectid/actions, api/actions</p>
 <p>Other endpoints are being worked on</p>
 
 

@@ -13,4 +13,12 @@ router.register(r'actions', ActionViewSet, basename='actions')
 
 urlpatterns = [
     url(r'', include(router.urls)),
+    path('projects/<int:project_id>/actions/<int:action_id>', ProjectViewSet.as_view(
+        {
+        'get': 'project_action',
+        'put': 'project_action_update',
+        'delete': 'project_action_destroy',
+        }
+        )),
+    
 ]
